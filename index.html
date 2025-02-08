@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="/manifest.json">
+    <title>¿Puedo ser tu San Valentín?</title>
+    <style>
+        /* Aplicar el box-sizing global para una mejor gestión de tamaños */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #ffeef2;
+            flex-direction: column;
+            padding: 0 10px; /* Agregar espaciado lateral */
+        }
+
+        img {
+            width: 50vw; /* La imagen ocupa el 50% del ancho de la ventana */
+            max-width: 300px; /* Limitar tamaño máximo */
+            margin-bottom: 20px;
+        }
+
+        .contenedor {
+            text-align: center;
+            border: 2px solid #ff60a2;
+            border-radius: 10px;
+            padding: 30px;
+            background-color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 80%; /* Contenedor usa el 80% del ancho disponible */
+            max-width: 400px; /* Limita el ancho máximo del contenedor */
+        }
+
+        h1 {
+            color: #ff60a2;
+            font-size: 6vw; /* El tamaño se ajusta según el ancho de la ventana */
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 3vw; /* El tamaño se ajusta proporcionalmente */
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .botones {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px; /* Separación entre botones */
+        }
+
+        .boton {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 4vw; /* Tamaño de fuente relativo */
+            transition: all 0.3s ease-in-out;
+            flex-grow: 1;
+        }
+
+        .verde {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .rojo {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        /* Animación para estirar el botón verde */
+        .verde.estirado {
+            width: 100%;
+            margin: 0;
+        }
+
+        /* Desactivar clics en el botón rojo */
+        .rojo.no-clickeable {
+            pointer-events: none;
+        }
+        
+        /* Botón de instalación personalizado */
+        #installBtn {
+            display: none;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 4vw; /* Tamaño de fuente relativo */
+            transition: all 0.3s ease-in-out;
+        }
+
+    </style>
+</head>
+
+<body>
+    <!-- Imagen en la parte superior -->
+    <img id="imagenPreview" src="uno-preview.png" alt="Imagen de San Valentín">
+
+    <!-- Agregamos el audio aquí -->
+    <audio controls autoplay>
+        <source src="01.mp3" type="audio/mp3">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+    <br>
+
+    <div class="contenedor" id="contenedor">
+        <h1>¿Puedo ser tu San Valentín?</h1>
+        <p>Haz tu elección...y espera 3seg</p>
+        <div class="botones">
+            <button class="boton verde" id="siBtn">Sí</button>
+            <button class="boton rojo" id="noBtn">No</button>
+        </div>
+    </div>
+    
+    <!-- Botón de instalación personalizado -->
+    <button id="installBtn">Instalar App</button>
+
+    <script>
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (event) => {
+            // Evita que el navegador muestre el aviso de instalación automático
+            event.preventDefault();
+            // Guarda el evento para usarlo más tarde
+            deferredPrompt = event;
+            // Muestra el botón de instalación personalizado
+            document.getElementById('installBtn').style.display = 'block';
+        });
+
+        document.getElementById('installBtn').addEventListener('click', () => {
+            // Oculta el botón de instalación personalizado
+            document.getElementById('installBtn').style.display = 'none';
+            // Muestra el aviso de instalación
+            deferredPrompt.prompt();
+            // Espera la elección del usuario
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('Usuario aceptó la instalación');
+                } else {
+                    console.log('Usuario rechazó la instalación');
+                }
+                deferredPrompt = null;
+            });
+        });
+
+        const verdeBtn = document.getElementById("siBtn");
+        const rojoBtn = document.getElementById("noBtn");
+        const imagenPreview = document.getElementById("imagenPreview");
+
+        // Función para abrir WhatsApp con un mensaje
+        function abrirWhatsApp(mensaje) {
+            const mensajeCodificado = encodeURIComponent(mensaje);
+            window.open(`https://api.whatsapp.com/send?text=${mensajeCodificado}`, '_blank');
+        }
+
+        // Cuando se hace clic en el botón "No"
+        rojoBtn.addEventListener("click", () => {
+            // Cambiar la imagen a dos-preview.png
+            imagenPreview.src = "dos-preview.png";
+
+            // Desactivar ambos botones para evitar múltiples clics
+            verdeBtn.disabled = true;
+            rojoBtn.disabled = true;
+
+            // Esperar 3 segundos antes de abrir WhatsApp
+            setTimeout(() => {
+                const mensajeNo = "Eligiste que no 🙄, pero ahora ya no hay marcha atrás. Ahora estás conmigo y no hay excusas 😑. El castigo por decir que no es este: me vas a tener que pasar una fotito 😏. Así que prepárate mi amorcito 🤠💙... ¡Ya no hay escape!";
+                abrirWhatsApp(mensajeNo);
+            }, 3000); // 3000 milisegundos = 3 segundos
+        });
+
+        // Cuando se hace clic en el botón "Sí"
+        verdeBtn.addEventListener("click", () => {
+            // Cambiar la imagen a tres-preview.png cuando se hace clic en "Sí"
+            imagenPreview.src = "tres-preview.png";
+
+            // Mostrar la alerta personalizada
+            alert("¡Tqm, T amo muchote mi niña, perdón por hacerla sentir mal, tu premio lidia mi futura mujer ♥! JAJ");
+
+            // Desactivar ambos botones para evitar múltiples clics
+            verdeBtn.disabled = true;
+            rojoBtn.disabled = true;
+
+            // Esperar 3 segundos antes de abrir WhatsApp
+            setTimeout(() => {
+                const mensajeSi = "¡Sí, acepto ser tu San Valentín! 💖";
+                abrirWhatsApp(mensajeSi);
+            }, 3000); // 3000 milisegundos = 3 segundos
+        });
+    </script>
+</body>
+</html>

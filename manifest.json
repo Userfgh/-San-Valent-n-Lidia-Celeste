@@ -1,0 +1,15 @@
+{
+  "name": "San Valentín",
+  "short_name": "SanVal",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffeef2",
+  "description": "Una página para San Valentín",
+  "icons": [
+    {
+      "src": "icono.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
